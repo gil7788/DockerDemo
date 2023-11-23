@@ -27,7 +27,7 @@ Before you can run this project, you need to have the following tools installed 
 2. Push the Docker image to a Docker registry. If you don't have a Docker registry, you can use Docker Hub. Replace `<username>` with your Docker Hub username:
 
    ```bash
-   docker push <username>/fastapi-demo:latest
+   sudo docker push <username>/fastapi-demo:latest
    ```
 
 3. Start Minikube:
@@ -39,13 +39,13 @@ Before you can run this project, you need to have the following tools installed 
 4. Deploy the application to Minikube:
 
    ```bash
-   kubectl apply -f k8s/
+   kubectl apply --namespace=<name-space> -f k8s/
    ```
 
 5. Check the status of the application:
 
    ```bash
-   kubectl get pods
+   kubectl get pods --namespace=<namespace>
    ```
 
 ### Accessing the Application
@@ -53,10 +53,10 @@ Before you can run this project, you need to have the following tools installed 
 The application is exposed on a NodePort service. You can access the application at `localhost:30010`. If you want to access the application at `localhost:8000`, you can use `kubectl port-forward` to forward a local port to a port on the pod:
 
 ```bash
-kubectl port-forward pod/<pod-name> 8000:8000 -n fastapi-demo
+kubectl port-forward <pod-name> --namespace=<namespace> 8000:8000
 ```
 
-Replace `<pod-name>` with the name of your pod.
+Replace `<pod-name>` with the name of your pod, and <namespace> with the name of pod's namespace.
 
 ## Configuration
 
@@ -84,6 +84,62 @@ spec:
 ```
 
 The `targetPort` is set to 8000, which is the port your application is running on. The `port` is the port that the service will expose, which is 5000 in this case. The `type` is set to `NodePort`, which means that the service will be accessible on a static port on each Node in your cluster.
+
+## Local Build
+To run locally, you will need to have Python and the necessary dependencies installed on your machine or in a virtual environment. 
+
+### Creating a Python Virtual Environment
+
+Python virtual environments are an essential tool for isolating project dependencies and ensuring that different projects don't interfere with each other. Here's how you can create a Python virtual environment.
+#### Step 1: Install the virtual environment package
+
+Before creating a virtual environment, you need to ensure that the virtualenv package is installed. If it's not, you can install it using pip:
+```bash
+sudo apt install python3.8-venv
+```
+
+#### Step 2: Create the virtual environment
+
+Next, create a new virtual environment in your project directory. You can name the environment anything you like, but in this example, we'll call it env:
+```bash
+python3 -m venv venv
+```
+
+This command creates a new directory named env in your project directory. This directory contains the Python executable files and a copy of the pip library which you can use to install other packages 1.
+#### Step 3: Activate the virtual environment
+
+Before you can start installing packages into your virtual environment, you need to activate it. The command to activate the environment depends on your operating system:
+    On macOS and Linux:
+
+```bash
+source venv/bin/activate
+```
+
+ On Windows:
+```bash
+.\venv\Scripts\activate
+```
+
+After running this command, your terminal prompt should change to show the name of the activated environment 2.
+#### Step 4: Install necessary packages
+
+Now that your virtual environment is activated, you can install the necessary packages for your project. If you have a requirements.txt file, you can install all necessary packages with the following command:
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Step 5: Deactivate the virtual environment
+
+Once you're done working in your virtual environment, you can deactivate it by running the following command:
+
+```bash
+deactivate
+```
+
+This command returns you to your system's default Python interpreter 1.
+
+Remember, every time you want to work on your project, you should activate the virtual environment. This ensures that you're using the correct versions of your project's dependencies.
 
 ## Tests
 
